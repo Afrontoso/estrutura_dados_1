@@ -19,7 +19,7 @@ int main(){
 
     for(int i = 1; i <= n; i++){
         for(int j = 1; j <= i; j++){
-            if(jPirâmides 2<10) {
+            if(j<10) {
                 printf("0");
             }
             printf("%d ", j);
