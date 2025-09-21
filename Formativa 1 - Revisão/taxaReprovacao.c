@@ -1,57 +1,75 @@
 #include <stdio.h>
-#include <stdlib.h> // Para a função qsort
-#include <string.h> // Para a função strcmp
+#include <stdlib.h> 
 
-// Função de comparação para qsort, para ordenar inteiros em ordem crescente
+struct Disciplina {
+    int codigo;
+    int matriculados;
+    int aprovados;
+};
+
+struct Semestre {
+    int ano;
+    int semestre;
+    int m; 
+    struct Disciplina disciplinas[100];
+};
+
 int compararInteiros(const void *a, const void *b) {
     return (*(int *)a - *(int *)b);
 }
 
 int main() {
-    int D; // Quantidade total de disciplinas
-    
-    // Lê a quantidade total de disciplinas, que é a primeira linha da entrada.
+    int D;
     scanf("%d", &D);
 
-    int ano, semestre, m; // Ano, semestre e quantidade de disciplinas no semestre
+    struct Semestre semestres_lidos[100]; 
+    int num_semestres = 0; 
     
-    // O loop continua lendo dados até o final do arquivo (EOF).
-    while (scanf("%d %d %d", &ano, &semestre, &m) != EOF) {
-        int codigo, matriculados, aprovados;
+    while (scanf("%d %d %d", &semestres_lidos[num_semestres].ano, &semestres_lidos[num_semestres].semestre, &semestres_lidos[num_semestres].m) != EOF) {
+        
+        int disciplinas_neste_semestre = semestres_lidos[num_semestres].m;
+        
+        for (int i = 0; i < disciplinas_neste_semestre; i++) {
+            scanf("%d %d %d", 
+                  &semestres_lidos[num_semestres].disciplinas[i].codigo, 
+                  &semestres_lidos[num_semestres].disciplinas[i].matriculados, 
+                  &semestres_lidos[num_semestres].disciplinas[i].aprovados);
+        }
+        
+        num_semestres++;
+    }
+
+    for (int i = 0; i < num_semestres; i++) {
         int max_reprovacoes = -1;
-        int codigos_max_reprovacoes[m]; // Array para armazenar os códigos com maior reprovação
+        
+        int m = semestres_lidos[i].m;
+        int codigos_max_reprovacoes[m];
         int count_codigos = 0;
 
-        // Imprime o cabeçalho do semestre.
-        printf("%d/%d\n", ano, semestre);
+        printf("%d/%d\n", semestres_lidos[i].ano, semestres_lidos[i].semestre);
 
-        // Loop para ler os dados de cada uma das 'm' disciplinas do semestre.
-        for (int i = 0; i < m; i++) {
-            scanf("%d %d %d", &codigo, &matriculados, &aprovados);
+        for (int j = 0; j < m; j++) {
+            int matriculados = semestres_lidos[i].disciplinas[j].matriculados;
+            int aprovados = semestres_lidos[i].disciplinas[j].aprovados;
+            int codigo = semestres_lidos[i].disciplinas[j].codigo;
+            
             int reprovacoes = matriculados - aprovados;
 
-            // Verifica se a reprovação atual é a nova máxima.
             if (reprovacoes > max_reprovacoes) {
                 max_reprovacoes = reprovacoes;
-                count_codigos = 0; // Reseta a lista de códigos, pois há um novo máximo.
+                count_codigos = 0;
                 codigos_max_reprovacoes[count_codigos++] = codigo;
             } else if (reprovacoes == max_reprovacoes) {
-                // Se for igual, adiciona o código à lista.
                 codigos_max_reprovacoes[count_codigos++] = codigo;
             }
         }
         
-        // Se houver mais de um código, ordena a lista em ordem crescente.
-        if (count_codigos > 1) {
-            qsort(codigos_max_reprovacoes, count_codigos, sizeof(int), compararInteiros);
-        }
+        qsort(codigos_max_reprovacoes, count_codigos, sizeof(int), compararInteiros);
 
-        // Imprime os códigos em ordem crescente.
-        for (int i = 0; i < count_codigos; i++) {
-            printf("%d ", codigos_max_reprovacoes[i]);
+        for (int j = 0; j < count_codigos; j++) {
+            printf("%d ", codigos_max_reprovacoes[j]);
         }
         
-        // Imprime as linhas de quebra de linha conforme o exemplo.
         printf("\n\n");
     }
 
